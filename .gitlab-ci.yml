@@ -1,0 +1,62 @@
+variables:
+  MAVEN_OPTS: >-
+   -Dhttps.protocols=TLSv1.2
+   -Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository
+  
+  MAVEN_CLI_OPTS: >-
+   --batch-mode
+   --errors
+   --fail-at-end
+   --show-version
+
+image: maven:3.6.3-jdk-11
+
+stages:
+  - build
+  - test
+  - deploy
+
+
+build-job:
+  stage: build
+  before_script:
+    - echo "Compiling the code ..."
+    - echo $CI_COMMIT_REF_NAME
+    - echo $CI_PROJECT_DIR
+  script:
+    - mvn $MAVEN_CLI_OPTS clean compile
+  allow_failure: true
+  after_script:
+    - echo "Compile completed"
+
+
+test-job:
+  stage: test
+  before_script:
+    - echo "Testing the code ..."
+    - echo $CI_COMMIT_REF_NAME
+    - echo $CI_PROJECT_DIR
+  script:
+    - mvn $MAVEN_CLI_OPTS test
+  allow_failure: true
+  after_script:
+    - echo "Test completed"  
+  artifacts:
+    reports:
+      junit:
+        - target/surefire-reports/TEST-*.xml
+
+cache:
+  paths:
+    - .m2/repository
+
+        
+
+      
+
+
+
+ 
+    
+    
+
